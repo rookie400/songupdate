@@ -1,159 +1,163 @@
 <!DOCTYPE html>
 
 <html lang="en">
+
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Echo Mix Videoke - Song Updates</title>
 
 <style>
-    * {
-        box-sizing: border-box;
-    }
 
-    html,
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    min-height: 100%;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #080808;
+    color: #fff;
+}
+
+body {
+    padding: 30px 18px 50px;
+}
+
+.container {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 36px;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+
+.header p {
+    margin: 10px 0 0;
+    color: #aaa;
+    font-size: 16px;
+}
+
+.status {
+    background: #151515;
+    border: 1px solid #292929;
+    border-radius: 14px;
+    padding: 16px 18px;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #bbb;
+}
+
+.status strong {
+    color: #fff;
+}
+
+.updates {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 12px;
+}
+
+.update {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: #151515;
+    border: 1px solid #292929;
+    border-radius: 12px;
+    padding: 14px 16px;
+}
+
+.update-name {
+    min-width: 0;
+}
+
+.update-name strong {
+    display: block;
+    font-size: 16px;
+    word-break: break-all;
+}
+
+.update-name span {
+    display: block;
+    margin-top: 4px;
+    font-size: 12px;
+    color: #888;
+}
+
+.download {
+    flex-shrink: 0;
+    display: inline-block;
+    padding: 9px 14px;
+    border-radius: 8px;
+    background: #19c463;
+    color: #000;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 13px;
+}
+
+.download:hover {
+    filter: brightness(1.12);
+}
+
+.footer {
+    margin-top: 30px;
+    text-align: center;
+    color: #666;
+    font-size: 12px;
+}
+
+.loading {
+    text-align: center;
+    color: #aaa;
+    padding: 30px;
+}
+
+.empty {
+    text-align: center;
+    color: #888;
+    padding: 30px;
+    background: #151515;
+    border: 1px solid #292929;
+    border-radius: 12px;
+}
+
+@media (max-width: 600px) {
+
     body {
-        margin: 0;
-        padding: 0;
-        width: 100%;
-        min-height: 100%;
-        font-family: Arial, Helvetica, sans-serif;
-        background: #080808;
-        color: #fff;
-    }
-
-    body {
-        padding: 30px 18px 50px;
-    }
-
-    .container {
-        width: 100%;
-        max-width: 900px;
-        margin: 0 auto;
-    }
-
-    .header {
-        text-align: center;
-        margin-bottom: 30px;
+        padding: 20px 12px 40px;
     }
 
     .header h1 {
-        margin: 0;
-        font-size: 36px;
-        font-weight: 800;
-        letter-spacing: 1px;
-    }
-
-    .header p {
-        margin: 10px 0 0;
-        color: #aaa;
-        font-size: 16px;
-    }
-
-    .status {
-        background: #151515;
-        border: 1px solid #292929;
-        border-radius: 14px;
-        padding: 16px 18px;
-        margin-bottom: 20px;
-        text-align: center;
-        color: #bbb;
-    }
-
-    .status strong {
-        color: #fff;
-    }
-
-    .updates {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-        gap: 12px;
+        font-size: 28px;
     }
 
     .update {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-        background: #151515;
-        border: 1px solid #292929;
-        border-radius: 12px;
-        padding: 14px 16px;
-    }
-
-    .update-name {
-        min-width: 0;
-    }
-
-    .update-name strong {
-        display: block;
-        font-size: 16px;
-        word-break: break-all;
-    }
-
-    .update-name span {
-        display: block;
-        margin-top: 4px;
-        font-size: 12px;
-        color: #888;
+        padding: 12px;
     }
 
     .download {
-        flex-shrink: 0;
-        display: inline-block;
-        padding: 9px 14px;
-        border-radius: 8px;
-        background: #19c463;
-        color: #000;
-        text-decoration: none;
-        font-weight: 700;
-        font-size: 13px;
+        padding: 8px 11px;
     }
 
-    .download:hover {
-        filter: brightness(1.12);
-    }
+}
 
-    .missing {
-        opacity: 0.45;
-    }
-
-    .missing .download {
-        background: #333;
-        color: #888;
-        pointer-events: none;
-    }
-
-    .footer {
-        margin-top: 30px;
-        text-align: center;
-        color: #666;
-        font-size: 12px;
-    }
-
-    .loading {
-        text-align: center;
-        color: #aaa;
-        padding: 30px;
-    }
-
-    @media (max-width: 600px) {
-        body {
-            padding: 20px 12px 40px;
-        }
-
-        .header h1 {
-            font-size: 28px;
-        }
-
-        .update {
-            padding: 12px;
-        }
-
-        .download {
-            padding: 8px 11px;
-        }
-    }
 </style>
 
 </head>
@@ -164,62 +168,89 @@
 
 ```
 <div class="header">
+
     <h1>🎤 Echo Mix Videoke</h1>
-    <p>Song Update Center</p>
+
+    <p>
+        Song Update Center
+    </p>
+
 </div>
+
 
 <div class="status" id="status">
+
     Checking available updates...
+
 </div>
 
+
 <div class="updates" id="updates">
+
     <div class="loading">
         Please wait...
     </div>
+
 </div>
 
+
 <div class="footer">
+
     Echo Mix Videoke Song Update Server
+
 </div>
 ```
 
 </div>
 
 <script>
+
 "use strict";
+
 
 /*
     GitHub repository:
+
     https://rookie400.github.io/songupdate/
 
     Update files:
+
     1update.data
     2update.data
+    3update.data
     ...
     100update.data
 */
+
 
 const BASE_URL = "./";
 
 const MAX_UPDATES = 100;
 
+
 const updatesContainer =
     document.getElementById("updates");
+
 
 const statusElement =
     document.getElementById("status");
 
 
-function createUpdateElement(number, exists) {
+/* =========================================================
+   CREATE AVAILABLE UPDATE
+========================================================= */
+
+function createUpdateElement(number) {
 
     const fileName =
         number + "update.data";
+
 
     const item =
         document.createElement("div");
 
     item.className =
-        "update" + (exists ? "" : " missing");
+        "update";
 
 
     const name =
@@ -240,12 +271,11 @@ function createUpdateElement(number, exists) {
         document.createElement("span");
 
     description.textContent =
-        exists
-            ? "Update package available"
-            : "Not available";
+        "Update package available";
 
 
     name.appendChild(title);
+
     name.appendChild(description);
 
 
@@ -256,40 +286,29 @@ function createUpdateElement(number, exists) {
         "download";
 
     button.textContent =
-        exists
-            ? "DOWNLOAD"
-            : "N/A";
+        "DOWNLOAD";
 
 
-    if (exists) {
+    button.href =
+        BASE_URL + fileName;
 
-        button.href =
-            BASE_URL + fileName;
 
-        button.download =
-            fileName;
-
-    } else {
-
-        button.href =
-            "javascript:void(0)";
-
-    }
+    button.download =
+        fileName;
 
 
     item.appendChild(name);
+
     item.appendChild(button);
+
 
     return item;
 }
 
 
-/*
-    Check whether a file exists.
-
-    GitHub Pages returns 200 when the file exists
-    and normally 404 when it does not.
-*/
+/* =========================================================
+   CHECK FILE
+========================================================= */
 
 async function fileExists(fileName) {
 
@@ -304,21 +323,36 @@ async function fileExists(fileName) {
                 }
             );
 
+
         return response.ok;
 
-    } catch (error) {
+    }
+
+    catch (error) {
 
         return false;
 
     }
+
 }
 
+
+/* =========================================================
+   LOAD AVAILABLE UPDATES ONLY
+========================================================= */
 
 async function loadUpdates() {
 
     updatesContainer.innerHTML = "";
 
+
     let available = 0;
+
+
+    /*
+        Check 1update.data
+        through 100update.data
+    */
 
     for (
         let number = 1;
@@ -329,45 +363,82 @@ async function loadUpdates() {
         const fileName =
             number + "update.data";
 
+
         const exists =
             await fileExists(fileName);
 
 
-        if (exists) {
-            available++;
+        /*
+            IMPORTANT:
+
+            Only create the card when
+            the file actually exists.
+        */
+
+        if (!exists) {
+
+            continue;
+
         }
+
+
+        available++;
 
 
         const element =
             createUpdateElement(
-                number,
-                exists
+                number
             );
 
-        updatesContainer.appendChild(element);
+
+        updatesContainer.appendChild(
+            element
+        );
+
     }
 
 
-    statusElement.innerHTML =
-        "<strong>" +
-        available +
-        "</strong> update package(s) available " +
-        "out of " +
-        MAX_UPDATES +
-        ".";
-
+    /* =====================================================
+       STATUS
+    ===================================================== */
 
     if (available === 0) {
 
         statusElement.innerHTML =
             "No update packages are currently available.";
 
+
+        updatesContainer.innerHTML =
+            `
+            <div class="empty">
+                No song updates available.
+            </div>
+            `;
+
+
+        return;
+
     }
+
+
+    statusElement.innerHTML =
+        "<strong>" +
+        available +
+        "</strong> update package" +
+        (
+            available === 1
+                ? ""
+                : "s"
+        ) +
+        " available.";
+
 }
 
 
 loadUpdates();
+
 </script>
 
 </body>
+
 </html>
