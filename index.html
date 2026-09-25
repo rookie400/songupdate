@@ -149,7 +149,7 @@ body {
     color: #ff6b6b;
     padding: 30px;
     background: #151515;
-    border: 1px solid #3a2020;
+    border: 1px solid #292929;
     border-radius: 12px;
 }
 
@@ -223,12 +223,49 @@ body {
 
 
 /* =========================================================
-   SETTINGS
+   GITHUB SETTINGS
 ========================================================= */
 
-const BASE_URL = "./";
+/*
+    GitHub repository:
 
-const MANIFEST_FILE = "updates.json";
+    https://github.com/rookie400/songupdate
+
+    GitHub Pages:
+
+    https://rookie400.github.io/songupdate/
+*/
+
+const GITHUB_OWNER =
+    "rookie400";
+
+const GITHUB_REPOSITORY =
+    "songupdate";
+
+const GITHUB_BRANCH =
+    "main";
+
+
+const BASE_URL =
+    "https://rookie400.github.io/songupdate/";
+
+
+/*
+    GitHub API.
+
+    This gets the actual files in the repository.
+
+    No 1.mp4 -> 99999.mp4 scanning.
+*/
+
+const GITHUB_API =
+    "https://api.github.com/repos/" +
+    GITHUB_OWNER +
+    "/" +
+    GITHUB_REPOSITORY +
+    "/git/trees/" +
+    GITHUB_BRANCH +
+    "?recursive=1";
 
 
 /* =========================================================
@@ -240,6 +277,38 @@ const updatesContainer =
 
 const statusElement =
     document.getElementById("status");
+
+
+/* =========================================================
+   VALID SONG FILE
+========================================================= */
+
+function isValidSongFile(path) {
+
+    if (
+        typeof path !== "string"
+    ) {
+
+        return false;
+
+    }
+
+
+    /*
+        Only root-level:
+
+        1.mp4
+        25.mp4
+        1234.mp4
+        99999.mp4
+
+        No folders.
+    */
+
+    return /^[1-9][0-9]{0,4}\.mp4$/i
+        .test(path);
+
+}
 
 
 /* =========================================================
@@ -292,7 +361,8 @@ function createSongElement(fileName) {
 
 
     button.href =
-        BASE_URL + fileName;
+        BASE_URL +
+        encodeURIComponent(fileName);
 
 
     button.download =
@@ -310,50 +380,23 @@ function createSongElement(fileName) {
 
 
 /* =========================================================
-   VALIDATE SONG NAME
+   GET FILES FROM GITHUB
 ========================================================= */
 
-function isValidSongFile(fileName) {
-
-    if (
-        typeof fileName !== "string"
-    ) {
-
-        return false;
-
-    }
-
-
-    /*
-        Only:
-
-        1.mp4
-        2.mp4
-        1234.mp4
-        ...
-        99999.mp4
-    */
-
-    return /^[1-9][0-9]{0,4}\.mp4$/i
-        .test(fileName);
-
-}
-
-
-/* =========================================================
-   LOAD MANIFEST
-========================================================= */
-
-async function loadManifest() {
+async function getGitHubSongs() {
 
     const response =
         await fetch(
-            MANIFEST_FILE +
-            "?t=" +
+            GITHUB_API +
+            "&t=" +
             Date.now(),
             {
                 method: "GET",
-                cache: "no-store"
+                cache: "no-store",
+                headers: {
+                    "Accept":
+                        "application/vnd.github+json"
+                }
             }
         );
 
@@ -361,7 +404,8 @@ async function loadManifest() {
     if (!response.ok) {
 
         throw new Error(
-            "Unable to load updates.json"
+            "GitHub API error: " +
+            response.status
         );
 
     }
@@ -371,16 +415,84 @@ async function loadManifest() {
         await response.json();
 
 
-    if (!Array.isArray(data)) {
+    /*
+        GitHub can indicate that
+        the recursive tree was truncated.
+    */
 
-        throw new Error(
-            "updates.json must contain an array"
+    if (data.truncated) {
+
+        console.warn(
+            "GitHub repository tree was truncated."
         );
 
     }
 
 
-    return data;
+    if (
+        !Array.isArray(data.tree)
+    ) {
+
+        throw new Error(
+            "Invalid GitHub API response."
+        );
+
+    }
+
+
+    const songs =
+        data.tree
+            .filter(
+                item =>
+                    item.type === "blob"
+            )
+            .map(
+                item =>
+                    item.path
+            )
+            .filter(
+                isValidSongFile
+            )
+            .map(
+                fileName =>
+                    fileName.toLowerCase()
+            );
+
+
+    /*
+        Remove duplicates.
+    */
+
+    const uniqueSongs =
+        [...new Set(songs)];
+
+
+    /*
+        Sort by song number.
+    */
+
+    uniqueSongs.sort(
+        (a, b) => {
+
+            const numberA =
+                parseInt(
+                    a.replace(".mp4", ""),
+                    10
+                );
+
+            const numberB =
+                parseInt(
+                    b.replace(".mp4", ""),
+                    10
+                );
+
+            return numberA - numberB;
+
+        }
+    );
+
+
+    return uniqueSongs;
 
 }
 
@@ -391,7 +503,13 @@ async function loadManifest() {
 
 async function loadSongs() {
 
-    updatesContainer.innerHTML = "";
+    updatesContainer.innerHTML =
+        `
+        <div class="loading">
+            Scanning GitHub...
+        </div>
+        `;
+
 
     statusElement.textContent =
         "Checking available updates...";
@@ -400,9 +518,9 @@ async function loadSongs() {
     try {
 
         /*
-            ONE REQUEST ONLY.
+            ONE GITHUB API REQUEST.
 
-            No more:
+            It does NOT check:
 
             1.mp4
             2.mp4
@@ -411,55 +529,8 @@ async function loadSongs() {
             99999.mp4
         */
 
-        const manifest =
-            await loadManifest();
-
-
-        /*
-            Clean and validate
-            the manifest.
-        */
-
         const songs =
-            manifest
-                .filter(isValidSongFile)
-                .map(
-                    fileName =>
-                        fileName.toLowerCase()
-                );
-
-
-        /*
-            Remove duplicates.
-        */
-
-        const uniqueSongs =
-            [...new Set(songs)];
-
-
-        /*
-            Sort numerically.
-        */
-
-        uniqueSongs.sort(
-            (a, b) => {
-
-                const numberA =
-                    parseInt(
-                        a.replace(".mp4", ""),
-                        10
-                    );
-
-                const numberB =
-                    parseInt(
-                        b.replace(".mp4", ""),
-                        10
-                    );
-
-                return numberA - numberB;
-
-            }
-        );
+            await getGitHubSongs();
 
 
         /* =================================================
@@ -467,7 +538,7 @@ async function loadSongs() {
         ================================================= */
 
         if (
-            uniqueSongs.length === 0
+            songs.length === 0
         ) {
 
             statusElement.innerHTML =
@@ -488,7 +559,7 @@ async function loadSongs() {
 
 
         /* =================================================
-           CREATE SONG CARDS
+           CREATE ALL CARDS
         ================================================= */
 
         const fragment =
@@ -497,21 +568,19 @@ async function loadSongs() {
 
         for (
             const fileName
-            of uniqueSongs
+            of songs
         ) {
 
-            const element =
+            fragment.appendChild(
                 createSongElement(
                     fileName
-                );
-
-
-            fragment.appendChild(
-                element
+                )
             );
 
         }
 
+
+        updatesContainer.innerHTML = "";
 
         updatesContainer.appendChild(
             fragment
@@ -524,10 +593,10 @@ async function loadSongs() {
 
         statusElement.innerHTML =
             "<strong>" +
-            uniqueSongs.length +
+            songs.length +
             "</strong> song" +
             (
-                uniqueSongs.length === 1
+                songs.length === 1
                     ? ""
                     : "s"
             ) +
@@ -539,22 +608,22 @@ async function loadSongs() {
     catch (error) {
 
         console.error(
-            "Update manifest error:",
+            "GitHub update scan error:",
             error
         );
 
 
-        statusElement.textContent =
+        statusElement.innerHTML =
             "Unable to check song updates.";
 
 
         updatesContainer.innerHTML =
             `
             <div class="error">
-                Cannot load updates.json.
+                Cannot read the GitHub song list.
                 <br><br>
-                Please make sure the file exists
-                in the songupdate folder.
+                Please check the repository
+                and branch settings.
             </div>
             `;
 
