@@ -177,13 +177,11 @@ body {
 
 </div>
 
-
 <div class="status" id="status">
 
     Checking available updates...
 
 </div>
-
 
 <div class="updates" id="updates">
 
@@ -192,7 +190,6 @@ body {
     </div>
 
 </div>
-
 
 <div class="footer">
 
@@ -213,19 +210,19 @@ body {
 
     https://rookie400.github.io/songupdate/
 
-    Update files:
+    Song files:
 
-    1update.data
-    2update.data
-    3update.data
+    1.mp4
+    2.mp4
+    3.mp4
     ...
-    100update.data
+    99999.mp4
 */
 
 
 const BASE_URL = "./";
 
-const MAX_UPDATES = 100;
+const MAX_SONGS = 99999;
 
 
 const updatesContainer =
@@ -237,13 +234,13 @@ const statusElement =
 
 
 /* =========================================================
-   CREATE AVAILABLE UPDATE
+   CREATE SONG ELEMENT
 ========================================================= */
 
-function createUpdateElement(number) {
+function createSongElement(number) {
 
     const fileName =
-        number + "update.data";
+        number + ".mp4";
 
 
     const item =
@@ -271,7 +268,7 @@ function createUpdateElement(number) {
         document.createElement("span");
 
     description.textContent =
-        "Update package available";
+        "Song package available";
 
 
     name.appendChild(title);
@@ -303,6 +300,7 @@ function createUpdateElement(number) {
 
 
     return item;
+
 }
 
 
@@ -338,10 +336,10 @@ async function fileExists(fileName) {
 
 
 /* =========================================================
-   LOAD AVAILABLE UPDATES ONLY
+   LOAD AVAILABLE SONGS
 ========================================================= */
 
-async function loadUpdates() {
+async function loadSongs() {
 
     updatesContainer.innerHTML = "";
 
@@ -350,18 +348,24 @@ async function loadUpdates() {
 
 
     /*
-        Check 1update.data
-        through 100update.data
+        Check:
+
+        1.mp4
+        2.mp4
+        3.mp4
+        ...
+        99999.mp4
     */
+
 
     for (
         let number = 1;
-        number <= MAX_UPDATES;
+        number <= MAX_SONGS;
         number++
     ) {
 
         const fileName =
-            number + "update.data";
+            number + ".mp4";
 
 
         const exists =
@@ -369,10 +373,8 @@ async function loadUpdates() {
 
 
         /*
-            IMPORTANT:
-
-            Only create the card when
-            the file actually exists.
+            Only create the card
+            when the MP4 actually exists.
         */
 
         if (!exists) {
@@ -386,7 +388,7 @@ async function loadUpdates() {
 
 
         const element =
-            createUpdateElement(
+            createSongElement(
                 number
             );
 
@@ -405,7 +407,7 @@ async function loadUpdates() {
     if (available === 0) {
 
         statusElement.innerHTML =
-            "No update packages are currently available.";
+            "No song packages are currently available.";
 
 
         updatesContainer.innerHTML =
@@ -424,7 +426,7 @@ async function loadUpdates() {
     statusElement.innerHTML =
         "<strong>" +
         available +
-        "</strong> update package" +
+        "</strong> song" +
         (
             available === 1
                 ? ""
@@ -435,7 +437,11 @@ async function loadUpdates() {
 }
 
 
-loadUpdates();
+/* =========================================================
+   START
+========================================================= */
+
+loadSongs();
 
 </script>
 
