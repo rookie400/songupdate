@@ -1,10 +1,13 @@
 <!DOCTYPE html>
-
 <html lang="en">
 
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
 <title>Echo Mix Videoke - Song Updates</title>
 
 <style>
@@ -68,7 +71,10 @@ body {
 
 .updates {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    grid-template-columns: repeat(
+        auto-fit,
+        minmax(260px, 1fr)
+    );
     gap: 12px;
 }
 
@@ -138,6 +144,15 @@ body {
     border-radius: 12px;
 }
 
+.error {
+    text-align: center;
+    color: #ff6b6b;
+    padding: 30px;
+    background: #151515;
+    border: 1px solid #3a2020;
+    border-radius: 12px;
+}
+
 @media (max-width: 600px) {
 
     body {
@@ -166,68 +181,62 @@ body {
 
 <div class="container">
 
-```
-<div class="header">
+    <div class="header">
 
-    <h1>🎤 Echo Mix Videoke</h1>
+        <h1>🎤 Echo Mix Videoke</h1>
 
-    <p>
-        Song Update Center
-    </p>
+        <p>
+            Song Update Center
+        </p>
 
-</div>
+    </div>
 
-<div class="status" id="status">
 
-    Checking available updates...
+    <div class="status" id="status">
 
-</div>
+        Checking available updates...
 
-<div class="updates" id="updates">
+    </div>
 
-    <div class="loading">
-        Please wait...
+
+    <div class="updates" id="updates">
+
+        <div class="loading">
+            Please wait...
+        </div>
+
+    </div>
+
+
+    <div class="footer">
+
+        Echo Mix Videoke Song Update Server
+
     </div>
 
 </div>
 
-<div class="footer">
-
-    Echo Mix Videoke Song Update Server
-
-</div>
-```
-
-</div>
 
 <script>
 
 "use strict";
 
 
-/*
-    GitHub repository:
-
-    https://rookie400.github.io/songupdate/
-
-    Song files:
-
-    1.mp4
-    2.mp4
-    3.mp4
-    ...
-    99999.mp4
-*/
-
+/* =========================================================
+   SETTINGS
+========================================================= */
 
 const BASE_URL = "./";
 
-const MAX_SONGS = 99999;
+const MANIFEST_FILE = "updates.json";
 
+
+/* =========================================================
+   ELEMENTS
+========================================================= */
 
 const updatesContainer =
     document.getElementById("updates");
-
 
 const statusElement =
     document.getElementById("status");
@@ -237,11 +246,7 @@ const statusElement =
    CREATE SONG ELEMENT
 ========================================================= */
 
-function createSongElement(number) {
-
-    const fileName =
-        number + ".mp4";
-
+function createSongElement(fileName) {
 
     const item =
         document.createElement("div");
@@ -305,32 +310,77 @@ function createSongElement(number) {
 
 
 /* =========================================================
-   CHECK FILE
+   VALIDATE SONG NAME
 ========================================================= */
 
-async function fileExists(fileName) {
+function isValidSongFile(fileName) {
 
-    try {
-
-        const response =
-            await fetch(
-                BASE_URL + fileName,
-                {
-                    method: "HEAD",
-                    cache: "no-store"
-                }
-            );
-
-
-        return response.ok;
-
-    }
-
-    catch (error) {
+    if (
+        typeof fileName !== "string"
+    ) {
 
         return false;
 
     }
+
+
+    /*
+        Only:
+
+        1.mp4
+        2.mp4
+        1234.mp4
+        ...
+        99999.mp4
+    */
+
+    return /^[1-9][0-9]{0,4}\.mp4$/i
+        .test(fileName);
+
+}
+
+
+/* =========================================================
+   LOAD MANIFEST
+========================================================= */
+
+async function loadManifest() {
+
+    const response =
+        await fetch(
+            MANIFEST_FILE +
+            "?t=" +
+            Date.now(),
+            {
+                method: "GET",
+                cache: "no-store"
+            }
+        );
+
+
+    if (!response.ok) {
+
+        throw new Error(
+            "Unable to load updates.json"
+        );
+
+    }
+
+
+    const data =
+        await response.json();
+
+
+    if (!Array.isArray(data)) {
+
+        throw new Error(
+            "updates.json must contain an array"
+        );
+
+    }
+
+
+    return data;
 
 }
 
@@ -343,96 +393,172 @@ async function loadSongs() {
 
     updatesContainer.innerHTML = "";
 
-
-    let available = 0;
-
-
-    /*
-        Check:
-
-        1.mp4
-        2.mp4
-        3.mp4
-        ...
-        99999.mp4
-    */
+    statusElement.textContent =
+        "Checking available updates...";
 
 
-    for (
-        let number = 1;
-        number <= MAX_SONGS;
-        number++
-    ) {
+    try {
 
-        const fileName =
-            number + ".mp4";
+        /*
+            ONE REQUEST ONLY.
 
+            No more:
 
-        const exists =
-            await fileExists(fileName);
+            1.mp4
+            2.mp4
+            3.mp4
+            ...
+            99999.mp4
+        */
+
+        const manifest =
+            await loadManifest();
 
 
         /*
-            Only create the card
-            when the MP4 actually exists.
+            Clean and validate
+            the manifest.
         */
 
-        if (!exists) {
+        const songs =
+            manifest
+                .filter(isValidSongFile)
+                .map(
+                    fileName =>
+                        fileName.toLowerCase()
+                );
 
-            continue;
+
+        /*
+            Remove duplicates.
+        */
+
+        const uniqueSongs =
+            [...new Set(songs)];
+
+
+        /*
+            Sort numerically.
+        */
+
+        uniqueSongs.sort(
+            (a, b) => {
+
+                const numberA =
+                    parseInt(
+                        a.replace(".mp4", ""),
+                        10
+                    );
+
+                const numberB =
+                    parseInt(
+                        b.replace(".mp4", ""),
+                        10
+                    );
+
+                return numberA - numberB;
+
+            }
+        );
+
+
+        /* =================================================
+           NO SONGS
+        ================================================= */
+
+        if (
+            uniqueSongs.length === 0
+        ) {
+
+            statusElement.innerHTML =
+                "No song packages are currently available.";
+
+
+            updatesContainer.innerHTML =
+                `
+                <div class="empty">
+                    No song updates available.
+                </div>
+                `;
+
+
+            return;
 
         }
 
 
-        available++;
+        /* =================================================
+           CREATE SONG CARDS
+        ================================================= */
+
+        const fragment =
+            document.createDocumentFragment();
 
 
-        const element =
-            createSongElement(
-                number
+        for (
+            const fileName
+            of uniqueSongs
+        ) {
+
+            const element =
+                createSongElement(
+                    fileName
+                );
+
+
+            fragment.appendChild(
+                element
             );
+
+        }
 
 
         updatesContainer.appendChild(
-            element
+            fragment
         );
+
+
+        /* =================================================
+           STATUS
+        ================================================= */
+
+        statusElement.innerHTML =
+            "<strong>" +
+            uniqueSongs.length +
+            "</strong> song" +
+            (
+                uniqueSongs.length === 1
+                    ? ""
+                    : "s"
+            ) +
+            " available.";
+
 
     }
 
+    catch (error) {
 
-    /* =====================================================
-       STATUS
-    ===================================================== */
+        console.error(
+            "Update manifest error:",
+            error
+        );
 
-    if (available === 0) {
 
-        statusElement.innerHTML =
-            "No song packages are currently available.";
+        statusElement.textContent =
+            "Unable to check song updates.";
 
 
         updatesContainer.innerHTML =
             `
-            <div class="empty">
-                No song updates available.
+            <div class="error">
+                Cannot load updates.json.
+                <br><br>
+                Please make sure the file exists
+                in the songupdate folder.
             </div>
             `;
 
-
-        return;
-
     }
-
-
-    statusElement.innerHTML =
-        "<strong>" +
-        available +
-        "</strong> song" +
-        (
-            available === 1
-                ? ""
-                : "s"
-        ) +
-        " available.";
 
 }
 
