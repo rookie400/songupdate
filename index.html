@@ -1,174 +1,217 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
 
 <meta charset="UTF-8">
 
 <meta name="viewport"
-      content="width=device-width, initial-scale=1.0">
+      content="width=device-width,
+               initial-scale=1.0,
+               maximum-scale=1.0,
+               user-scalable=no">
 
-<title>Echo Mix Videoke - Song Updates</title>
+<title>Song Update Center</title>
 
 <style>
 
-* {
-    box-sizing: border-box;
+*{
+    box-sizing:border-box;
+    -webkit-tap-highlight-color:transparent;
 }
 
 html,
-body {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    min-height: 100%;
-    font-family: Arial, Helvetica, sans-serif;
-    background: #080808;
-    color: #fff;
+body{
+    margin:0;
+    width:100%;
+    min-height:100%;
+    background:#050505;
+    color:white;
+    font-family:Arial,Helvetica,sans-serif;
 }
 
-body {
-    padding: 30px 18px 50px;
+body{
+    padding:20px;
 }
 
-.container {
-    width: 100%;
-    max-width: 900px;
-    margin: 0 auto;
+.container{
+    width:100%;
+    max-width:900px;
+    margin:0 auto;
 }
 
-.header {
-    text-align: center;
-    margin-bottom: 30px;
+.title{
+    text-align:center;
+    font-size:30px;
+    font-weight:bold;
+    margin:10px 0 6px;
 }
 
-.header h1 {
-    margin: 0;
-    font-size: 36px;
-    font-weight: 800;
-    letter-spacing: 1px;
+.subtitle{
+    text-align:center;
+    color:#aaa;
+    font-size:14px;
+    margin-bottom:25px;
 }
 
-.header p {
-    margin: 10px 0 0;
-    color: #aaa;
-    font-size: 16px;
+.status{
+    background:#111;
+    border:1px solid #292929;
+    border-radius:14px;
+    padding:18px;
+    margin-bottom:20px;
 }
 
-.status {
-    background: #151515;
-    border: 1px solid #292929;
-    border-radius: 14px;
-    padding: 16px 18px;
-    margin-bottom: 20px;
-    text-align: center;
-    color: #bbb;
+.status-title{
+    font-size:13px;
+    color:#888;
+    margin-bottom:7px;
 }
 
-.status strong {
-    color: #fff;
+.status-text{
+    font-size:18px;
+    font-weight:bold;
 }
 
-.updates {
-    display: grid;
-    grid-template-columns: repeat(
-        auto-fit,
-        minmax(260px, 1fr)
-    );
-    gap: 12px;
+.progress-wrap{
+    display:none;
+    margin-top:15px;
 }
 
-.update {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    background: #151515;
-    border: 1px solid #292929;
-    border-radius: 12px;
-    padding: 14px 16px;
+.progress-bar-bg{
+    width:100%;
+    height:18px;
+    background:#222;
+    border-radius:20px;
+    overflow:hidden;
 }
 
-.update-name {
-    min-width: 0;
+.progress-bar{
+    width:0%;
+    height:100%;
+    background:#00e676;
+    transition:width .15s linear;
 }
 
-.update-name strong {
-    display: block;
-    font-size: 16px;
-    word-break: break-all;
+.progress-text{
+    text-align:center;
+    margin-top:8px;
+    font-size:14px;
+    color:#bbb;
 }
 
-.update-name span {
-    display: block;
-    margin-top: 4px;
-    font-size: 12px;
-    color: #888;
+.buttons{
+    display:flex;
+    gap:10px;
+    margin-bottom:20px;
 }
 
-.download {
-    flex-shrink: 0;
-    display: inline-block;
-    padding: 9px 14px;
-    border-radius: 8px;
-    background: #19c463;
-    color: #000;
-    text-decoration: none;
-    font-weight: 700;
-    font-size: 13px;
+button{
+    flex:1;
+    border:0;
+    border-radius:12px;
+    padding:15px;
+    font-size:16px;
+    font-weight:bold;
+    color:white;
+    background:#1769e0;
+    cursor:pointer;
 }
 
-.download:hover {
-    filter: brightness(1.12);
+button:active{
+    transform:scale(.98);
 }
 
-.footer {
-    margin-top: 30px;
-    text-align: center;
-    color: #666;
-    font-size: 12px;
+button:disabled{
+    opacity:.45;
+    cursor:not-allowed;
 }
 
-.loading {
-    text-align: center;
-    color: #aaa;
-    padding: 30px;
+.scan-btn{
+    background:#1769e0;
 }
 
-.empty {
-    text-align: center;
-    color: #888;
-    padding: 30px;
-    background: #151515;
-    border: 1px solid #292929;
-    border-radius: 12px;
+.refresh-btn{
+    background:#333;
 }
 
-.error {
-    text-align: center;
-    color: #ff6b6b;
-    padding: 30px;
-    background: #151515;
-    border: 1px solid #292929;
-    border-radius: 12px;
+.list{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
 }
 
-@media (max-width: 600px) {
+.item{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:15px;
+    background:#111;
+    border:1px solid #242424;
+    border-radius:12px;
+    padding:13px 15px;
+}
 
-    body {
-        padding: 20px 12px 40px;
+.item-name{
+    font-size:16px;
+    font-weight:bold;
+}
+
+.item-status{
+    font-size:13px;
+    color:#999;
+}
+
+.available{
+    color:#00e676;
+}
+
+.empty{
+    text-align:center;
+    padding:35px 10px;
+    color:#777;
+}
+
+.count{
+    margin-bottom:12px;
+    color:#aaa;
+    font-size:14px;
+}
+
+.loading{
+    display:none;
+    text-align:center;
+    padding:20px;
+    color:#aaa;
+}
+
+.spinner{
+    width:28px;
+    height:28px;
+    border:3px solid #333;
+    border-top-color:#00e676;
+    border-radius:50%;
+    animation:spin .8s linear infinite;
+    margin:0 auto 10px;
+}
+
+@keyframes spin{
+    to{
+        transform:rotate(360deg);
+    }
+}
+
+@media(max-width:600px){
+
+    body{
+        padding:12px;
     }
 
-    .header h1 {
-        font-size: 28px;
+    .title{
+        font-size:24px;
     }
 
-    .update {
-        padding: 12px;
-    }
-
-    .download {
-        padding: 8px 11px;
+    .buttons{
+        flex-direction:column;
     }
 
 }
@@ -181,465 +224,351 @@ body {
 
 <div class="container">
 
-    <div class="header">
-
-        <h1>🎤 Echo Mix Videoke</h1>
-
-        <p>
-            Song Update Center
-        </p>
-
+    <div class="title">
+        SONG UPDATE CENTER
     </div>
 
-
-    <div class="status" id="status">
-
-        Checking available updates...
-
+    <div class="subtitle">
+        Available update packages
     </div>
 
+    <div class="status">
 
-    <div class="updates" id="updates">
+        <div class="status-title">
+            STATUS
+        </div>
 
-        <div class="loading">
-            Please wait...
+        <div id="statusText"
+             class="status-text">
+            Ready
+        </div>
+
+        <div id="progressWrap"
+             class="progress-wrap">
+
+            <div class="progress-bar-bg">
+
+                <div id="progressBar"
+                     class="progress-bar">
+                </div>
+
+            </div>
+
+            <div id="progressText"
+                 class="progress-text">
+                0%
+            </div>
+
         </div>
 
     </div>
 
+    <div class="buttons">
 
-    <div class="footer">
+        <button id="scanBtn"
+                class="scan-btn"
+                onclick="loadSongs()">
+            SCAN UPDATES
+        </button>
 
-        Echo Mix Videoke Song Update Server
+        <button id="refreshBtn"
+                class="refresh-btn"
+                onclick="location.reload()">
+            REFRESH
+        </button>
+
+    </div>
+
+    <div id="count"
+         class="count">
+        No scan performed yet.
+    </div>
+
+    <div id="loading"
+         class="loading">
+
+        <div class="spinner"></div>
+
+        Scanning update packages...
+
+    </div>
+
+    <div id="songList"
+         class="list">
+
+        <div class="empty">
+            Press SCAN UPDATES
+        </div>
 
     </div>
 
 </div>
 
-
 <script>
 
-"use strict";
+const BASE_URL = "./";
 
-
-/* =========================================================
-   GITHUB SETTINGS
-========================================================= */
-
-/*
-    GitHub repository:
-
-    https://github.com/rookie400/songupdate
-
-    GitHub Pages:
-
-    https://rookie400.github.io/songupdate/
-*/
-
-const GITHUB_OWNER =
-    "rookie400";
-
-const GITHUB_REPOSITORY =
-    "songupdate";
-
-const GITHUB_BRANCH =
-    "main";
-
-
-const BASE_URL =
-    "https://rookie400.github.io/songupdate/";
-
-
-/*
-    GitHub API.
-
-    This gets the actual files in the repository.
-
-    No 1.mp4 -> 99999.mp4 scanning.
-*/
-
-const GITHUB_API =
-    "https://api.github.com/repos/" +
-    GITHUB_OWNER +
-    "/" +
-    GITHUB_REPOSITORY +
-    "/git/trees/" +
-    GITHUB_BRANCH +
-    "?recursive=1";
+const MAX_UPDATE_PACKAGE = 100;
 
 
 /* =========================================================
    ELEMENTS
 ========================================================= */
 
-const updatesContainer =
-    document.getElementById("updates");
+const scanBtn =
+    document.getElementById("scanBtn");
 
-const statusElement =
-    document.getElementById("status");
+const refreshBtn =
+    document.getElementById("refreshBtn");
+
+const statusText =
+    document.getElementById("statusText");
+
+const songList =
+    document.getElementById("songList");
+
+const countText =
+    document.getElementById("count");
+
+const loading =
+    document.getElementById("loading");
+
+const progressWrap =
+    document.getElementById("progressWrap");
+
+const progressBar =
+    document.getElementById("progressBar");
+
+const progressText =
+    document.getElementById("progressText");
 
 
 /* =========================================================
-   VALID SONG FILE
+   CHECK FILE
 ========================================================= */
 
-function isValidSongFile(path) {
+async function fileExists(fileName){
 
-    if (
-        typeof path !== "string"
-    ) {
+    try{
+
+        const response =
+            await fetch(
+                BASE_URL + fileName,
+                {
+                    method:"HEAD",
+                    cache:"no-store"
+                }
+            );
+
+        return response.ok;
+
+    }catch(error){
 
         return false;
 
     }
 
-
-    /*
-        Only root-level:
-
-        1.mp4
-        25.mp4
-        1234.mp4
-        99999.mp4
-
-        No folders.
-    */
-
-    return /^[1-9][0-9]{0,4}\.mp4$/i
-        .test(path);
-
 }
 
 
 /* =========================================================
-   CREATE SONG ELEMENT
+   LOAD SONGS
 ========================================================= */
 
-function createSongElement(fileName) {
+async function loadSongs(){
 
-    const item =
-        document.createElement("div");
+    scanBtn.disabled = true;
 
-    item.className =
-        "update";
+    refreshBtn.disabled = true;
 
+    loading.style.display = "block";
 
-    const name =
-        document.createElement("div");
+    progressWrap.style.display = "block";
 
-    name.className =
-        "update-name";
+    progressBar.style.width = "0%";
 
+    progressText.textContent =
+        "Scanning 0 / " +
+        MAX_UPDATE_PACKAGE;
 
-    const title =
-        document.createElement("strong");
+    statusText.textContent =
+        "Scanning updates...";
 
-    title.textContent =
-        fileName;
+    songList.innerHTML = "";
 
-
-    const description =
-        document.createElement("span");
-
-    description.textContent =
-        "Song package available";
+    countText.textContent =
+        "Scanning...";
 
 
-    name.appendChild(title);
-
-    name.appendChild(description);
-
-
-    const button =
-        document.createElement("a");
-
-    button.className =
-        "download";
-
-    button.textContent =
-        "DOWNLOAD";
-
-
-    button.href =
-        BASE_URL +
-        encodeURIComponent(fileName);
-
-
-    button.download =
-        fileName;
-
-
-    item.appendChild(name);
-
-    item.appendChild(button);
-
-
-    return item;
-
-}
-
-
-/* =========================================================
-   GET FILES FROM GITHUB
-========================================================= */
-
-async function getGitHubSongs() {
-
-    const response =
-        await fetch(
-            GITHUB_API +
-            "&t=" +
-            Date.now(),
-            {
-                method: "GET",
-                cache: "no-store",
-                headers: {
-                    "Accept":
-                        "application/vnd.github+json"
-                }
-            }
-        );
-
-
-    if (!response.ok) {
-
-        throw new Error(
-            "GitHub API error: " +
-            response.status
-        );
-
-    }
-
-
-    const data =
-        await response.json();
+    const available = [];
 
 
     /*
-        GitHub can indicate that
-        the recursive tree was truncated.
+       Scan only:
+
+       1update.data
+       2update.data
+       ...
+       100update.data
     */
 
-    if (data.truncated) {
+    for(
+        let i = 1;
+        i <= MAX_UPDATE_PACKAGE;
+        i++
+    ){
 
-        console.warn(
-            "GitHub repository tree was truncated."
-        );
+        const fileName =
+            i + "update.data";
 
-    }
-
-
-    if (
-        !Array.isArray(data.tree)
-    ) {
-
-        throw new Error(
-            "Invalid GitHub API response."
-        );
-
-    }
+        const exists =
+            await fileExists(fileName);
 
 
-    const songs =
-        data.tree
-            .filter(
-                item =>
-                    item.type === "blob"
-            )
-            .map(
-                item =>
-                    item.path
-            )
-            .filter(
-                isValidSongFile
-            )
-            .map(
-                fileName =>
-                    fileName.toLowerCase()
+        if(exists){
+
+            available.push({
+                number:i,
+                name:fileName
+            });
+
+        }
+
+
+        const percent =
+            Math.round(
+                (i / MAX_UPDATE_PACKAGE) * 100
             );
 
 
-    /*
-        Remove duplicates.
-    */
+        progressBar.style.width =
+            percent + "%";
 
-    const uniqueSongs =
-        [...new Set(songs)];
+        progressText.textContent =
+            "Scanning " +
+            i +
+            " / " +
+            MAX_UPDATE_PACKAGE +
+            " (" +
+            percent +
+            "%)";
 
-
-    /*
-        Sort by song number.
-    */
-
-    uniqueSongs.sort(
-        (a, b) => {
-
-            const numberA =
-                parseInt(
-                    a.replace(".mp4", ""),
-                    10
-                );
-
-            const numberB =
-                parseInt(
-                    b.replace(".mp4", ""),
-                    10
-                );
-
-            return numberA - numberB;
-
-        }
-    );
+    }
 
 
-    return uniqueSongs;
+    loading.style.display = "none";
+
+
+    if(available.length === 0){
+
+        statusText.textContent =
+            "NO UPDATE YET";
+
+        countText.textContent =
+            "No update packages available.";
+
+        songList.innerHTML =
+            '<div class="empty">' +
+            'NO UPDATE YET' +
+            '</div>';
+
+    }else{
+
+        statusText.textContent =
+            available.length +
+            " UPDATE PACKAGE" +
+            (available.length === 1 ? "" : "S") +
+            " AVAILABLE";
+
+
+        countText.textContent =
+            available.length +
+            " package" +
+            (available.length === 1 ? "" : "s") +
+            " found.";
+
+
+        renderSongs(available);
+
+    }
+
+
+    progressBar.style.width = "100%";
+
+    progressText.textContent =
+        "SCAN COMPLETED";
+
+
+    scanBtn.disabled = false;
+
+    refreshBtn.disabled = false;
 
 }
 
 
 /* =========================================================
-   LOAD AVAILABLE SONGS
+   DISPLAY AVAILABLE FILES
 ========================================================= */
 
-async function loadSongs() {
+function renderSongs(files){
 
-    updatesContainer.innerHTML =
-        `
-        <div class="loading">
-            Scanning GitHub...
-        </div>
-        `;
+    songList.innerHTML = "";
 
 
-    statusElement.textContent =
-        "Checking available updates...";
+    files.forEach(file => {
+
+        const item =
+            document.createElement("div");
+
+        item.className =
+            "item";
 
 
-    try {
+        const name =
+            document.createElement("div");
 
-        /*
-            ONE GITHUB API REQUEST.
+        name.className =
+            "item-name";
 
-            It does NOT check:
-
-            1.mp4
-            2.mp4
-            3.mp4
-            ...
-            99999.mp4
-        */
-
-        const songs =
-            await getGitHubSongs();
+        name.textContent =
+            file.name;
 
 
-        /* =================================================
-           NO SONGS
-        ================================================= */
+        const state =
+            document.createElement("div");
 
-        if (
-            songs.length === 0
-        ) {
+        state.className =
+            "item-status available";
 
-            statusElement.innerHTML =
-                "No song packages are currently available.";
+        state.textContent =
+            "AVAILABLE";
 
 
-            updatesContainer.innerHTML =
-                `
-                <div class="empty">
-                    No song updates available.
-                </div>
-                `;
+        item.appendChild(name);
 
+        item.appendChild(state);
 
-            return;
+        songList.appendChild(item);
 
-        }
-
-
-        /* =================================================
-           CREATE ALL CARDS
-        ================================================= */
-
-        const fragment =
-            document.createDocumentFragment();
-
-
-        for (
-            const fileName
-            of songs
-        ) {
-
-            fragment.appendChild(
-                createSongElement(
-                    fileName
-                )
-            );
-
-        }
-
-
-        updatesContainer.innerHTML = "";
-
-        updatesContainer.appendChild(
-            fragment
-        );
-
-
-        /* =================================================
-           STATUS
-        ================================================= */
-
-        statusElement.innerHTML =
-            "<strong>" +
-            songs.length +
-            "</strong> song" +
-            (
-                songs.length === 1
-                    ? ""
-                    : "s"
-            ) +
-            " available.";
-
-
-    }
-
-    catch (error) {
-
-        console.error(
-            "GitHub update scan error:",
-            error
-        );
-
-
-        statusElement.innerHTML =
-            "Unable to check song updates.";
-
-
-        updatesContainer.innerHTML =
-            `
-            <div class="error">
-                Cannot read the GitHub song list.
-                <br><br>
-                Please check the repository
-                and branch settings.
-            </div>
-            `;
-
-    }
+    });
 
 }
 
 
 /* =========================================================
-   START
+   OPTIONAL AUTO SCAN
 ========================================================= */
 
-loadSongs();
+window.addEventListener(
+    "load",
+    () => {
+
+        loadSongs();
+
+    }
+);
 
 </script>
 
 </body>
-
 </html>
